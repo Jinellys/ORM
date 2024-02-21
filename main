@@ -1,0 +1,10 @@
+from CRUD import select_table, join_table, update_table, select_by,select_with_agr
+from orm import create_table, insert_table
+
+#create_table()
+#insert_table()
+#select_table()
+#join_table()
+#update_table()
+select_by()
+#select_with_agr()
