@@ -1,0 +1,91 @@
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column
+from datetime import date, datetime
+from database import Base, engine
+from typing import Optional, Annotated, List
+from decimal import Decimal
+
+from sqlalchemy.orm import relationship
+
+intPK = Annotated[int, mapped_column(autoincrement=True, primary_key=True)]
+
+
+class Worker(Base):
+    __tablename__ = 'workers'
+
+    id: Mapped[intPK]
+    name: Mapped[str]
+    surname: Mapped[str]
+    patronymic: Mapped[str]
+    post: Mapped[str]
+    address: Mapped[str]
+    phone: Mapped[int]
+    birthdate: Mapped[Optional[date]]
+    #  orders = relationship('Order', back_populates='workers')
+    order: Mapped[List['Order']] = relationship(back_populates='worker')
+
+
+class Supplier(Base):
+    __tablename__ = 'suppliers'
+
+    id: Mapped[intPK]
+    name: Mapped[str]
+    agent: Mapped[str]
+    name_agent: Mapped[str]
+    phone: Mapped[int]
+    address: Mapped[str]
+    supply: Mapped[List['Supply']] = relationship(back_populates='supplier')
+
+
+class Customer(Base):
+    __tablename__ = 'customers'
+
+    id: Mapped[intPK]
+    full_name: Mapped[str]
+    address: Mapped[str]
+    phone: Mapped[int]
+    order: Mapped[List['Order']] = relationship(back_populates='customer')
+
+
+class Supply(Base):
+    __tablename__ = 'supplys'
+
+    id: Mapped[intPK]
+    supplier_id: Mapped[int] = mapped_column(ForeignKey('suppliers.id', ondelete='CASCADE'))
+    date_supply: Mapped[date]
+    supplier: Mapped['Supplier'] = relationship(back_populates='supply')
+    product: Mapped[List['Product']] = relationship(back_populates='supply')
+
+
+class Product(Base):
+    __tablename__ = 'products'
+
+    id: Mapped[intPK]
+    supply_id: Mapped[int] = mapped_column(ForeignKey('supplys.id', ondelete='CASCADE'))
+    supply: Mapped['Supply'] = relationship(back_populates='product')
+    name: Mapped[str]
+    technical_specifications: Mapped[str]
+    definition: Mapped[Optional[str]]
+    photo: Mapped[Optional[bytes]]
+    availability: Mapped[bool]
+    price_purchase: Mapped[Decimal]
+    quantity: Mapped[int]
+    price_sale: Mapped[Decimal]
+    order: Mapped[List['Order']] = relationship(back_populates='product')
+
+
+class Order(Base):
+    __tablename__ = 'orders'
+
+    id: Mapped[intPK]
+    worker_id: Mapped[int] = mapped_column(ForeignKey('workers.id', ondelete='CASCADE'))
+    worker: Mapped['Worker'] = relationship(back_populates='order')
+    product_id: Mapped[int] = mapped_column(ForeignKey('products.id', ondelete='CASCADE'))
+    product: Mapped['Product'] = relationship(back_populates='order')
+    date_placement: Mapped[datetime] = mapped_column(default=datetime.now)
+    date_execution: Mapped[datetime]
+    customer_id: Mapped[int] = mapped_column(ForeignKey('customers.id', ondelete='CASCADE'))
+    customer: Mapped['Customer'] = relationship(back_populates='order')
+
+
+Base.metadata.create_all(engine)
