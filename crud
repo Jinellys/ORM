@@ -1,0 +1,77 @@
+from database import Base, session, engine
+from model import Worker, Supplier, Customer, Supply, Product, Order
+from sqlalchemy import select, func
+
+
+def select_table():
+    with session() as Session:
+        query = select('*').select_from(Customer)
+        result = Session.execute(query)
+        #customers = result.scalars().all()
+        customers = result.all()
+        # заголовки столбцов
+        columns = Customer.__table__.columns.keys()
+        print(f"| {' | '.join(columns)} |")
+
+        # данные
+        for customer in customers:
+        #     print(customer)
+            values = [str(getattr(customer, col)) for col in columns]
+            print(f"| {' | '.join(values)} |")
+
+        Session.commit()
+
+
+def join_table():
+    with session() as Session:
+        result = Session.query(Product, Supply).join(Supply).all()
+
+        print('product.name', 'product.technical_specifications', 'supply.id', 'supply.date_supply', sep='|')
+
+        for product, supply in result:
+            print(f'{product.name}|{product.technical_specifications}|{supply.id}|{supply.date_supply}')
+
+        Session.commit()
+
+
+def update_table():
+    with session() as Session:
+        customer_2 = Session.get(Customer, 2)
+        customer_2.phone = '112233'
+
+        customer_5 = Session.get(Customer, 5)
+        customer_5.full_name = 'Барабашкина ЯЯ'
+
+        customer_4 = Session.get(Customer, 4)
+        customer_4.address = 'Дальний пр. 9'
+
+        # customer_new = session.query(Customer).filter(Customer.address == None)
+        # customer_new.update({Customer.address: 'Руднева ул.33'})
+
+        Session.commit()
+
+
+def select_by():
+    with session() as Session:
+        stmt = select('*').select_from(Product).where(Product.id > 1).order_by(Product.name)
+        result = Session.execute(stmt)
+
+    for res in result:
+
+        print(res)
+
+        Session.commit()
+
+
+def select_with_agr():
+    with session() as Session:
+        query = select(Product.name, func.max(Product.quantity * Product.price_purchase).label('max_sales')
+                       ).select_from(Product).where(Product.availability).group_by(Product.name)
+        result = Session.execute(query)
+
+    for res in result:
+        maxi_sales = res.max_sales
+
+        print(f'{res.name} | {maxi_sales}')
+
+        Session.commit()
