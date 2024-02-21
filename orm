@@ -1,0 +1,272 @@
+from database import Base, session, engine
+from model import Worker, Supplier, Customer, Supply, Product, Order
+
+
+
+def create_table():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+
+
+def insert_table():
+    with session() as Session:
+        worker_1 = Worker(
+            name='Мария',
+            patronymic='Ивановна',
+            surname='Иванова',
+            post='директор',
+            address='--',
+            phone=223366,
+            birthdate='19701210'
+        )
+
+        worker_2 = Worker(
+            name='Анна',
+            patronymic='Семеновна',
+            surname='Петрова',
+            post='бухгалтер',
+            address='Полевая ул.25',
+            phone=123114,
+            birthdate='19800410'
+        )
+
+        worker_3 = Worker(
+            name='Екатерина',
+            patronymic='Николаевна',
+            surname='Булгакова',
+            post='менеджер',
+            address='пер.Косой',
+            phone=998877,
+            birthdate='19991027'
+        )
+
+        worker_4 = Worker(
+            name='Гарри',
+            patronymic='-',
+            surname='Поттер',
+            post='оператор',
+            address='ул.Южная',
+            phone=675736,
+            birthdate='20030419'
+        )
+
+        worker_5 = Worker(
+            name='Маруся',
+            patronymic='Александровна',
+            surname='Красивая',
+            post='менеджер',
+            address='--',
+            phone=786453,
+            birthdate='20000101'
+        )
+
+        Session.add_all([worker_1, worker_5, worker_2, worker_4, worker_3])
+
+        supplier_1 = Supplier(
+            name='АО РогаИкопыта',
+            agent='директор',
+            name_agent='ВоланДеМорт',
+            phone=666666,
+            address='Косой пер.666'
+        )
+
+        supplier_2 = Supplier(
+            name='ИП Плюшкин',
+            agent='бухгалтер',
+            name_agent='Мымра Ивановна',
+            phone=763645,
+            address='Сырая ул.1'
+        )
+
+        supplier_3 = Supplier(
+            name='ИП Морозов',
+            agent='менеджер',
+            name_agent='Гермиона Гренджер',
+            phone=876654,
+            address='пр.Ленина 275'
+        )
+
+        supplier_4 = Supplier(
+            name='ООО Картель',
+            agent='менеджер',
+            name_agent='Дикий Ужас',
+            phone=685820,
+            address='вгимтгню.9086'
+        )
+
+        supplier_5 = Supplier(
+            name='ИП зло',
+            agent='водитель',
+            name_agent='Норм Чувак',
+            phone=115577,
+            address='щланк.345'
+        )
+
+        supplier_6 = Supplier(
+            name='ИП Крот',
+            agent='водитель',
+            name_agent='Неадекват',
+            phone=226699,
+            address='кымвека.84'
+        )
+
+        Session.add_all([supplier_1, supplier_2, supplier_3, supplier_4, supplier_5, supplier_6])
+
+        customer_1 = Customer(
+            full_name='Собакевич ВВ',
+            address='пл.1-мая.4',
+            phone=6597822
+        )
+
+        customer_2 = Customer(
+            full_name='Муськин ГГ',
+            address='-',
+            phone=879706
+        )
+
+        customer_3 = Customer(
+            full_name='Пуськин ДД',
+            address='ул.7-ноября 90',
+            phone=708090
+        )
+
+        customer_4 = Customer(
+            full_name='Дуров ИИ',
+            address='Ближний пр.90',
+            phone=938028
+        )
+
+        customer_5 = Customer(
+            full_name='Матрешкина КК',
+            address='Восточный пр.69',
+            phone=746539
+        )
+
+        Session.add_all([customer_5, customer_1, customer_3, customer_2, customer_4])
+
+        supply_1 = Supply(
+            date_supply='01/01/2020',
+            supplier=supplier_2
+        )
+
+        supply_2 = Supply(
+            date_supply='02/01/2020',
+            supplier=supplier_3
+        )
+
+        supply_3 = Supply(
+            date_supply='12/12/2020',
+            supplier=supplier_1
+        )
+
+        supply_4 = Supply(
+            date_supply='01/08/2020',
+            supplier=supplier_5
+        )
+
+        supply_5 = Supply(
+            date_supply='04/10/2020',
+            supplier=supplier_4
+        )
+
+        Session.add_all([supply_1, supply_2, supply_3, supply_5, supply_4])
+
+        product_1 = Product(
+            supply=supply_3,
+            name='котелок',
+            technical_specifications='метал',
+            definition='',
+            price_purchase=20,
+            availability=True,
+            quantity=10,
+            price_sale=40
+        )
+
+        product_2 = Product(
+            supply=supply_5,
+            name='волшебная палочка',
+            technical_specifications='кость',
+            definition='',
+            price_purchase=200,
+            availability=True,
+            quantity=10,
+            price_sale=400
+        )
+
+        product_3 = Product(
+            supply=supply_2,
+            name='учебник',
+            technical_specifications='кожа',
+            definition='"магические существа"',
+            price_purchase=40,
+            availability=True,
+            quantity=10,
+            price_sale=70
+        )
+
+        product_4 = Product(
+            supply=supply_1,
+            name='котелок',
+            technical_specifications='метал',
+            definition='',
+            price_purchase=20,
+            availability=True,
+            quantity=10,
+            price_sale=40
+        )
+
+        product_5 = Product(
+            supply=supply_4,
+            name='форма',
+            technical_specifications='мех',
+            definition='зимняя',
+            price_purchase=240,
+            availability=True,
+            quantity=10,
+            price_sale=390
+        )
+
+        Session.add_all([product_1, product_2, product_3, product_4, product_5])
+
+        order_1 = Order(
+            worker=worker_3,
+            product=product_2,
+            date_placement='2021-10-19 10:23:54',
+            date_execution='2021-10-20 10:23:54',
+            customer=customer_3
+        )
+
+        order_2 = Order(
+            worker=worker_1,
+            product=product_1,
+            date_placement='2021-10-20 11:23:54',
+            date_execution='2021-10-21 11:23:54',
+            customer=customer_4
+        )
+
+        order_3 = Order(
+            worker=worker_5,
+            product=product_3,
+            date_placement='2021-10-21 10:23:54',
+            date_execution='2021-10-22 11:23:54',
+            customer=customer_2
+        )
+
+        order_4 = Order(
+            worker=worker_2,
+            product=product_4,
+            date_placement='2021-10-23 08:23:54',
+            date_execution='2021-10-24 10:23:54',
+            customer=customer_5
+        )
+
+        order_5 = Order(
+            worker=worker_4,
+            product=product_5,
+            date_placement='2021-10-26 10:23:54',
+            date_execution='2021-10-27 11:23:54',
+            customer=customer_1
+        )
+
+        Session.add_all([order_5, order_1, order_2, order_3, order_4])
+        Session.commit()
